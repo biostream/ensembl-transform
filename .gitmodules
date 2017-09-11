@@ -1,0 +1,3 @@
+[submodule "genome-schema"]
+	path = genome-schema
+	url = https://github.com/biostream/genome-schema.git
