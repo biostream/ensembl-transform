@@ -9,13 +9,39 @@ import (
   "bmeg"
   "compress/gzip"
   "github.com/blachlylab/gff3"
+  "github.com/golang/protobuf/proto"
   "github.com/golang/protobuf/jsonpb"
 )
 
+type msg struct {
+  name string
+  msg  proto.Message
+}
 func main() {
   flag.Parse()
   
   json := jsonpb.Marshaler{}
+  
+  out := make(chan msg)
+  
+  go func() {      
+      files := map[string]*os.File{}
+      
+      for m := range out {
+        fname := fmt.Sprintf("%s.json", m.name)
+        if _, ok := files[fname]; !ok {
+          f, _ := os.Create(fname)
+          files[fname] = f
+        }
+        s, _ := json.MarshalToString(m.msg)
+        files[fname].Write([]byte(s))
+        files[fname].Write([]byte("\n"))
+      }
+    
+      for _, v := range files {
+        v.Close()
+      }
+  }()
   
   gz_handle, _ := os.Open(flag.Arg(0))
   handle, _ := gzip.NewReader(gz_handle)
@@ -46,8 +72,7 @@ func main() {
 	      End:int32(feat.EndField),
         SeqId:feat.SeqidField,
       }
-      s, _ := json.MarshalToString(&g)
-      fmt.Printf("%s\n", s )
+      out <- msg{"Gene", &g}
     case "transcript":
       t := bmeg.Transcript{
         Id:feat.AttributesField["ID"],
@@ -58,9 +83,7 @@ func main() {
 	      End:int32(feat.EndField),
         SeqId:feat.SeqidField,
       }
-      s, _ := json.MarshalToString(&t)
-      fmt.Printf("%s\n", s )
-
+      out <- msg{"Transcript", &t}
     case "exon":
       //fmt.Printf("%s %s\n", feat.AttributesField["Parent"], feat.TypeField)
     
@@ -84,5 +107,7 @@ func main() {
     }
   }
   gz_handle.Close()
+  
+  close(out)
   
 }
