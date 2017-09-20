@@ -58,6 +58,17 @@ func main() {
     case "biological_region":
       
     case "mRNA":
+      t := bmeg.Transcript{
+        Id:feat.AttributesField["ID"],
+        Parent:feat.AttributesField["Parent"],
+        Symbol:feat.AttributesField["Name"],
+        Strand:string(feat.StrandField),
+        Start:int32(feat.StartField),
+        End:int32(feat.EndField),
+        SeqId:feat.SeqidField,
+      }
+      out <- msg{"Transcript", &t}
+
     case "tRNA":
     case "vaultRNA_primary_transcript":
     case "lnc_RNA":
@@ -85,8 +96,15 @@ func main() {
       }
       out <- msg{"Transcript", &t}
     case "exon":
-      //fmt.Printf("%s %s\n", feat.AttributesField["Parent"], feat.TypeField)
-    
+      t := bmeg.Exon{
+        Id:fmt.Sprintf("exon:%s", feat.AttributesField["exon_id"]),
+        Parent:feat.AttributesField["Parent"],
+        Strand:string(feat.StrandField),
+        Start:int32(feat.StartField),
+        End:int32(feat.EndField),
+        SeqId:feat.SeqidField,
+      }
+      out <- msg{"Exon", &t}    
     case "miRNA":
     case "snoRNA":
     case "snRNA":
