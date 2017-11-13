@@ -3,7 +3,7 @@ cwlVersion: v1.0
 class: CommandLineTool
 hints:
   DockerRequirement:
-    dockerPull: ensembl-transform:latest
+    dockerPull: biostream/ensembl-transform:latest
 
 
 baseCommand:
