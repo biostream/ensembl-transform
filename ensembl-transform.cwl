@@ -18,9 +18,15 @@ inputs:
       position: 1
 
 outputs:
-  ENSEMBL_JSON:
-    type: 
-      type: array
-      items: File
+  TRANSCRIPT:
+    type: File
     outputBinding:
-      glob: "*.json"
+      glob: Transcript.json
+  GENE:
+    type: File
+    outputBinding:
+      glob: Gene.json
+  EXON:
+    type: File
+    outputBinding:
+      glob: Exon.json
