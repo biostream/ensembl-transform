@@ -99,7 +99,7 @@ func main() {
 		case "processed_transcript":
 		case "exon":
 			t := bmeg.Exon{
-				Id:     fmt.Sprintf("exon:%s", feat.AttributesField["exon_id"]),
+				Id:     feat.AttributesField["exon_id"],
 				Parent: feat.AttributesField["Parent"],
 				Strand: string(feat.StrandField),
 				Start:  int32(feat.StartField),
