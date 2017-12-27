@@ -11,11 +11,22 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 )
 
 type msg struct {
 	name string
 	msg  proto.Message
+}
+
+func id_clean(id string) string {
+
+	for _, p := range []string{"exon:", "gene:", "transcript:"} {
+		if strings.HasPrefix(id, p) {
+			return id[len(p):len(id)]
+		}
+	}
+	return id
 }
 
 func main() {
@@ -76,7 +87,7 @@ func main() {
 
 		case "gene":
 			g := bmeg.Gene{
-				Id:          feat.AttributesField["ID"],
+				Id:          id_clean(feat.AttributesField["ID"]),
 				Symbol:      feat.AttributesField["Name"],
 				Description: feat.AttributesField["description"],
 				Strand:      string(feat.StrandField),
@@ -87,8 +98,8 @@ func main() {
 			out <- msg{"Gene", &g}
 		case "transcript":
 			t := bmeg.Transcript{
-				Id:     feat.AttributesField["ID"],
-				Parent: feat.AttributesField["Parent"],
+				Id:     id_clean(feat.AttributesField["ID"]),
+				Parent: id_clean(feat.AttributesField["Parent"]),
 				Symbol: feat.AttributesField["Name"],
 				Strand: string(feat.StrandField),
 				Start:  int32(feat.StartField),
@@ -99,8 +110,8 @@ func main() {
 		case "processed_transcript":
 		case "exon":
 			t := bmeg.Exon{
-				Id:     feat.AttributesField["exon_id"],
-				Parent: feat.AttributesField["Parent"],
+				Id:     id_clean(feat.AttributesField["exon_id"]),
+				Parent: id_clean(feat.AttributesField["Parent"]),
 				Strand: string(feat.StrandField),
 				Start:  int32(feat.StartField),
 				End:    int32(feat.EndField),
