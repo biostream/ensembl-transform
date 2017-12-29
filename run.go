@@ -71,8 +71,8 @@ func main() {
 
 		case "mRNA":
 			t := bmeg.Transcript{
-				Id:     feat.AttributesField["ID"],
-				Parent: feat.AttributesField["Parent"],
+				Id:     id_clean(feat.AttributesField["ID"]),
+				Parent: id_clean(feat.AttributesField["Parent"]),
 				Symbol: feat.AttributesField["Name"],
 				Strand: string(feat.StrandField),
 				Start:  int32(feat.StartField),
